@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Canciones Dance</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #181818; color: #fff; margin: 0; padding: 0; }
+        header { text-align: center; padding: 1em 0; background: #1db954; }
+        header h1 { margin: 0; font-size: 2rem; }
+        .stats { text-align: center; color: #ccc; margin: 1em 0; }
+        table { margin: 1em auto; border-collapse: collapse; width: 90%; background: #222; }
+        th, td { padding: 0.7em 1em; border-bottom: 1px solid #333; text-align: left; }
+        th { background: #1db954; color: #fff; }
+        tr:hover { background: #282828; }
+        a.spotify-link { display: inline-block; vertical-align: middle; }
+        .spotify-icon { width: 24px; height: 24px; fill: #1db954; transition: fill 0.2s; }
+        a.spotify-link:hover .spotify-icon { fill: #1ed760; }
+        #lienzo { display: block; margin: 2em auto; background: #222; border: 2px solid #333; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Mi Lista Dance</h1>
+    </header>
+    <div class="stats">0 canciones disponibles</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Artista</th>
+                <th>Año</th>
+                <th>Spotify</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <!-- Canvas para compartir -->
+    <canvas id="lienzo" width="800" height="600"></canvas>
+
+    <script>
+    // Carga el CSV y actualiza la lista y el canvas
+    Papa.parse('canciones.csv', {
+        header: true,
+        download: true,
+        complete: function(results) {
+            const songs = results.data.filter(s => s.Título && s.Artista);
+            document.querySelector('.stats').textContent = songs.length + ' canciones disponibles';
+            const tbody = document.querySelector('tbody');
+            songs.forEach(song => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${song.Título}</td>
+                    <td>${song.Artista}</td>
+                    <td>${song.Año || '—'}</td>
+                    <td>
+                        <a class="spotify-link" href="https://open.spotify.com/search/${encodeURIComponent(song.Título + ' ' + song.Artista)}" target="_blank" title="Escuchar en Spotify">
+                            <svg class="spotify-icon" viewBox="0 0 168 168"><circle cx="84" cy="84" r="84" fill="#1db954"/><path d="M119.3 121.6c-1.7 2.8-5.3 3.7-8.1 2-22.3-13.6-50.4-16.7-83.5-9.2-3.2.7-6.4-1.3-7.1-4.5-.7-3.2 1.3-6.4 4.5-7.1 35.7-8 66.1-4.5 90.5 10.4 2.8 1.7 3.7 5.3 2 8.1zm11.6-23.2c-2.1 3.4-6.5 4.5-9.9 2.4-25.5-15.6-64.5-20.1-94.7-11.1-3.8 1.1-7.8-1.1-8.9-4.9-1.1-3.8 1.1-7.8 4.9-8.9 33.9-9.8 76.1-5 104.6 12.2 3.4 2.1 4.5 6.5 2.4 9.9zm12.2-25.2c-29.2-17.2-77.6-18.8-105.1-10.4-4.4 1.3-9-1.2-10.3-5.6-1.3-4.4 1.2-9 5.6-10.3 30.9-9.2 83.2-7.4 116.2 11.6 4 2.3 5.3 7.4 3 11.4-2.3 4-7.4 5.3-11.4 3z" fill="#fff"/></svg>
+                        </a>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+            // Dibuja en el canvas
+            const canvas = document.getElementById('lienzo');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.font = '32px Arial';
+            ctx.fillText('Mi Lista Dance', 50, 60);
+            ctx.font = '20px Arial';
+            songs.slice(0, 8).forEach((song, i) => {
+                ctx.fillText(`${i+1}. ${song.Título} - ${song.Artista}`, 50, 100 + i * 30);
+            });
+        }
+    });
+    </script>
+</body>
+</html>
