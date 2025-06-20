@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Canciones Dance</title>
+    <title>Mi Lista Dance (CSV remoto)</title>
     <style>
         body { font-family: Arial, sans-serif; background: #181818; color: #fff; margin: 0; padding: 0; }
         header { text-align: center; padding: 1em 0; background: #1db954; }
@@ -28,34 +28,33 @@
     <table>
         <thead>
             <tr>
-                <th>Título</th>
-                <th>Artista</th>
+                <th>title</th>
+                <th>artist</th>
                 <th>Año</th>
                 <th>Spotify</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
-    <!-- Canvas para compartir -->
     <canvas id="lienzo" width="800" height="600"></canvas>
 
     <script>
-    // Carga el CSV y actualiza la lista y el canvas
-    Papa.parse('canciones.csv', {
+    // Carga el CSV remoto y actualiza la lista y el canvas
+    Papa.parse('https://warsclon.github.io/canciones/canciones.csv', {
         header: true,
         download: true,
         complete: function(results) {
-            const songs = results.data.filter(s => s.Título && s.Artista);
+            const songs = results.data.filter(s => s.title && s.artist);
             document.querySelector('.stats').textContent = songs.length + ' canciones disponibles';
             const tbody = document.querySelector('tbody');
             songs.forEach(song => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${song.Título}</td>
-                    <td>${song.Artista}</td>
-                    <td>${song.Año || '—'}</td>
+                    <td>${song.title}</td>
+                    <td>${song.artist}</td>
+                    <td>${song.year}</td>
                     <td>
-                        <a class="spotify-link" href="https://open.spotify.com/search/${encodeURIComponent(song.Título + ' ' + song.Artista)}" target="_blank" title="Escuchar en Spotify">
+                        <a class="spotify-link" href="${song.spotify_url}" target="_blank" title="Escuchar en Spotify">
                             <svg class="spotify-icon" viewBox="0 0 168 168"><circle cx="84" cy="84" r="84" fill="#1db954"/><path d="M119.3 121.6c-1.7 2.8-5.3 3.7-8.1 2-22.3-13.6-50.4-16.7-83.5-9.2-3.2.7-6.4-1.3-7.1-4.5-.7-3.2 1.3-6.4 4.5-7.1 35.7-8 66.1-4.5 90.5 10.4 2.8 1.7 3.7 5.3 2 8.1zm11.6-23.2c-2.1 3.4-6.5 4.5-9.9 2.4-25.5-15.6-64.5-20.1-94.7-11.1-3.8 1.1-7.8-1.1-8.9-4.9-1.1-3.8 1.1-7.8 4.9-8.9 33.9-9.8 76.1-5 104.6 12.2 3.4 2.1 4.5 6.5 2.4 9.9zm12.2-25.2c-29.2-17.2-77.6-18.8-105.1-10.4-4.4 1.3-9-1.2-10.3-5.6-1.3-4.4 1.2-9 5.6-10.3 30.9-9.2 83.2-7.4 116.2 11.6 4 2.3 5.3 7.4 3 11.4-2.3 4-7.4 5.3-11.4 3z" fill="#fff"/></svg>
                         </a>
                     </td>`;
@@ -71,7 +70,7 @@
             ctx.fillText('Mi Lista Dance', 50, 60);
             ctx.font = '20px Arial';
             songs.slice(0, 8).forEach((song, i) => {
-                ctx.fillText(`${i+1}. ${song.Título} - ${song.Artista}`, 50, 100 + i * 30);
+                ctx.fillText(`${i+1}. ${song.title} - ${song.artist}`, 50, 100 + i * 30);
             });
         }
     });
